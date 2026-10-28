@@ -121,5 +121,3 @@ Export list for localhost:
 ![](./02_img/13.png)
 
 ---
-
-nou
