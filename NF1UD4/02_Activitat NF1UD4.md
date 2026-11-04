@@ -154,6 +154,8 @@ El client necessita que el directori /srv/nfs/admin_tools sigui accessible per l
 
 1. Exportar el directori `/srv/nfs/admin_tools` amb les opcions 'rw,sync'.
 
+
+
 2. Des del client, muntar aquest recurs compartit a `/mnt/admin_tools`. Com a root del client, intentar crear un fitxer dins d'aquest directori muntat.
 
 3. Verificar quin és el propietari del fitxer creat. Per què? Justificar la resposta amb l'explicació tècnica de 'root_squash'.
