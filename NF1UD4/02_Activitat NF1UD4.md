@@ -154,11 +154,28 @@ El client necessita que el directori /srv/nfs/admin_tools sigui accessible per l
 
 1. Exportar el directori `/srv/nfs/admin_tools` amb les opcions 'rw,sync'.
 
+![](./02_img/15.png)
 
+```bash
+sudo exportfs -ra
+sudo exportfs -v
+```
+
+![](./02_img/16.png)
+
+```bash
+sudo nano /etc/exports
+```
 
 2. Des del client, muntar aquest recurs compartit a `/mnt/admin_tools`. Com a root del client, intentar crear un fitxer dins d'aquest directori muntat.
 
+![](./02_img/17.png)
+
+![](./02_img/18.png)
+
 3. Verificar quin és el propietari del fitxer creat. Per què? Justificar la resposta amb l'explicació tècnica de 'root_squash'.
+
+![](./02_img/19.png)
 
 #### Prova 2 (La Solució)
 
