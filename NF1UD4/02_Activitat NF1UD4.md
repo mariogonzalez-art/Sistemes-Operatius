@@ -146,63 +146,67 @@ Export list for localhost:
 
 ---
 
-### Fase 3: L'Exportació d'Administració (El Dilema del root_squash)
+### Fase 3: L'exportació d'administració (el dilema de `root_squash`)
 
-El client necessita que el directori /srv/nfs/admin_tools sigui accessible per l'equip d'administradors. A vegades, l'usuari root del client (que sou vosaltres, els consultors) necessitarà escriure en aquest directori per instal·lar eines. Aquí mostrarem un error típic i la seva solució.
+El client necessita accedir a `/srv/nfs/admin_tools`. Aquesta fase mostra la configuració de les exportacions i les proves des del client.
 
-#### Prova 1 (L'error comú)
+1. Al servidor, configurar i recarregar les exportacions NFS.
 
-1. Exportar el directori `/srv/nfs/admin_tools` amb les opcions 'rw,sync'.
+   ![](./02_img/15.png)
 
-![](./02_img/15.png)
+   ```bash
+   sudo exportfs -ra
+   sudo exportfs -v
+   ```
 
-```bash
-sudo exportfs -ra
-sudo exportfs -v
-```
+2. Al client, provar l'escriptura indicada a la captura.
 
-![](./02_img/16.png)
+   ![](./02_img/16.png)
 
-```bash
-sudo nano /etc/exports
-```
+    [](./02_img/17.png)
 
-2. Des del client, muntar aquest recurs compartit a `/mnt/admin_tools`. Com a root del client, intentar crear un fitxer dins d'aquest directori muntat.
 
-![](./02_img/17.png)
+3. Al client, comprovar els recursos muntats.
 
-![](./02_img/18.png)
+    ![](./02_img/18.png)
 
-3. Verificar quin és el propietari del fitxer creat. Per què? Justificar la resposta amb l'explicació tècnica de 'root_squash'.
+   ```bash
+   findmnt /mnt/admin_tools
+   findmnt /mnt/dev_projects
+   ```
+
+### Fase 4: L'exportació de desenvolupament (permisos `rw` vs `ro`)
+
+1. Al client, provar de muntar el recurs NFS de desenvolupament.
 
 ![](./02_img/19.png)
 
-#### Prova 2 (La Solució)
+2. Com a `dev01`, provar d'escriure al directori compartit.
 
-1. Modificar l'exportació del directori `/srv/nfs/admin_tools` per incloure l'opció 'no_root_squash'.
+  ![](./02_img/20.png)
 
-2. Al client, desmuntar i tornar a muntar el recurs compartit.
+3. Com a administrador al client, comprovar la denegació d'escriptura.
 
-3. Com a root del client, intentar crear un fitxer dins d'aquest directori muntat. Observeu quin és el propietari del fitxer creat aquesta vegada. Ha canviat alguna cosa? Justificar la resposta amb l'explicació tècnica de 'no_root_squash'.
+![](./02_img/21.png)
 
-### Fase 4: L'Exportació de Desenvolupament (Permisos rw vs ro)
 
-1. Editar /etc/exports per afegir dues exportacions per al mateix directori. El client vol que la xarxa d'administració (p.ex., 192.168.56.0/24) hi pugui escriure, però que la xarxa de consultors (simularem que és una altra IP, p.ex., 192.168.56.150) només pugui llegir.
+4. Es pot desmuntar el recurs amb:
 
-   > Si les dues màquines es veuen per xarxa NAT, useu una IP consistent amb el rang de la xarxa NAT. Per exemple, per exemple, 10.0.2.100.
+![](./02_img/22.png)
 
-2. Des del client, muntar el recurs compartit a `/mnt/dev_projects` i provar d'escriure-hi com a usuari dev01. Hauria de funcionar.
+5. Al servidor, assignar els grups propietaris com es mostra a la captura.
 
-3. Desmuntar el recurs i canviar manualment la IP del client a 192.168.56.100. Tornar a provar d'escriure al directori muntat com a usuari dev01 i comprovar que només funciona la lectura.
+![](./02_img/23.png)
 
-4. Canvieu d'usuari al client a admin01 i torneu a provar d'escriure al directori muntat. Comproveu que no es pot escriure, ja que admin01 no és membre del grup devs (permisos locals del sistema de fitxers).
 
-### Fase 5: Muntatge Automàtic amb /etc/fstab
+### Fase 5: Muntatge automàtic amb `/etc/fstab`
 
-És evident que els usuaris no poden estar muntant manualment els recursos compartits cada vegada que reinicien el sistema. Per això, es configurarà el muntatge automàtic mitjançant el fitxer /etc/fstab al client.
+1. Configurar les entrades NFS al fitxer `/etc/fstab` del client.
 
-1. Editar el fitxer /etc/fstab al client per afegir les entrades necessàries per muntar automàticament els recursos compartits NFS al directori `/mnt/admin_tools` i `/mnt/dev_projects` durant l'inici del sistema.
+![](./02_img/24.png)
+`
 
-2. Executar la comanda `mount -a` per provar les entrades sense reiniciar.
+2. Executar `mount -a` per provar les entrades sense reiniciar.
 
-3. Reiniciar el client i verificar que els recursos compartits s'han muntat correctament.
+![](./02_img/25.png)
+
