@@ -1,4 +1,4 @@
-# NF1.UD4
+# NF1UD4 - Compartició d'arxius i carpetes
 
 ## Fase 1: Preparació de l'entorn
 
